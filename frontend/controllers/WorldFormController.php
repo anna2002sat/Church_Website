@@ -4,8 +4,9 @@
 namespace frontend\controllers;
 
 
-use app\controllers\Continent;
+
 use app\models\WorldForm;
+use frontend\models\Continent;
 use Yii;
 use yii\web\Controller;
 

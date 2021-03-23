@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\controllers;
+namespace frontend\models;
 
 
 use yii\db\ActiveRecord;

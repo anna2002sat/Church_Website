@@ -5,9 +5,9 @@ namespace frontend\models;
 
 
 use yii\base\Model;
-use \frontend\controllers\Hierarchy;
+use yii\db\ActiveRecord;
 
-class HierarchyModel extends Model
+class Hierarchy extends ActiveRecord
 {
     public function getChildren($id){
         $children= Hierarchy::findAll(['parent_id' => $id]);

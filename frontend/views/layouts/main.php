@@ -38,7 +38,7 @@ AppAsset::register($this);
     $menuItems = [
         ['label' => 'Home', 'url' => ['/site/index']],
         ['label' => 'World Form', 'url' => ['/world-form/index']],
-        ['label' => 'HierarchyModel', 'url' => ['/hierarchy/index']],
+        ['label' => 'Hierarchy', 'url' => ['/hierarchy/index']],
         ['label' => 'About', 'url' => ['/site/about']],
         ['label' => 'Contact', 'url' => ['/site/contact']],
         ['label' => 'Count Salary', 'url' => ['/salary/index']],
