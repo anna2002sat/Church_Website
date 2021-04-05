@@ -13,9 +13,8 @@ class HierarchyController extends Controller
     {
         $model = new Hierarchy();
         $categories = Hierarchy::find()->asArray()->where(['parent_id'=>0])->all() ;
-
         $departments= $model->GetDepartments();
-        //$departments_type=$departments->joinWith("Department_type")->asArray()->orderBy('parent_id')->all();
+
         return $this->render('index', ['list_model'=> $model,
             'categories'=>$categories,  'departments' =>$departments]);
     }
