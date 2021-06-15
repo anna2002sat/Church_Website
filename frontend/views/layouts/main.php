@@ -3,12 +3,15 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
-use yii\helpers\Html;
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
-use yii\widgets\Breadcrumbs;
-use frontend\assets\AppAsset;
 use common\widgets\Alert;
+use rmrevin\yii\fontawesome\FAS;
+use yii\helpers\Html;
+use yii\bootstrap4\Nav;
+use yii\bootstrap4\NavBar;
+use yii\bootstrap4\Breadcrumbs;
+use frontend\assets\AppAsset;
+use yii\helpers\Url;
+
 
 AppAsset::register($this);
 ?>
@@ -25,40 +28,55 @@ AppAsset::register($this);
 </head>
 <body>
 <?php $this->beginBody() ?>
-
+<?\Yii::$app->view->registerLinkTag(['rel' => 'icon', 'type' => 'image/png', 'href' => Url::to(['/frontend/web/images/icon.png'])]);?>
 <div class="wrap">
     <?php
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
+            'class' => 'navbar navbar-expand-lg navbar-dark bg-primary ',
         ],
     ]);
     $menuItems = [
         ['label' => 'Home', 'url' => ['/site/index']],
-        ['label' => 'World Form', 'url' => ['/world-form/index']],
-        ['label' => 'Hierarchy', 'url' => ['/hierarchy/index']],
-        ['label' => 'About', 'url' => ['/site/about']],
-        ['label' => 'Contact', 'url' => ['/site/contact']],
-        ['label' => 'Count Salary', 'url' => ['/salary/index']],
+        ['label' => 'Projects', 'url' => ['/project/index']],
+
     ];
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
-        $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+        $menuItems[] = ['label' => 'About', 'url' => ['/site/about']];
+        $menuItems[] = ['label' => 'Contact us', 'url' => ['/site/contact']];
+        $menuItems[] = ['label' => 'Register', 'url' => ['/user/signup'], 'class'=>'navItem'];
+        $menuItems[] = ['label' => 'Log in', 'url' => ['/user/login']];
     } else {
-        $menuItems[] = '<li>'
-            . Html::beginForm(['/site/logout'], 'post')
-            . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
-                ['class' => 'btn btn-link logout']
-            )
-            . Html::endForm()
-            . '</li>';
+        if (Yii::$app->user->can('Employee')) {
+        $menuItems[] = ['label' => 'Employees', 'url' => ['/employee']];
+        }
+        $menuItems[] =['label' => 'About', 'url' => ['/site/about']];
+        $menuItems[] =['label' => 'Contact us', 'url' => ['/site/contact']];
+        if (Yii::$app->user->can('Employee')) {
+            $dropDownItems[] = ['label' => 'My Projects', 'url' => '/employee/projects'];
+            $dropDownItems[] = "<div class='dropdown-divider'></div>";
+            $dropDownItems[] = ['label' => 'My Tasks', 'url' => '/employee/task-index'];
+            $dropDownItems[] = "<div class='dropdown-divider'></div>";
+        }
+
+        $dropDownItems[] = ['label'=>'My Employee Profile', 'url'=>'/employee/my-profile'];
+        $dropDownItems[] = "<div class='dropdown-divider'></div>";
+        $dropDownItems[] = [
+            'label'=>'Log Out (' . Yii::$app->user->identity->username . ')',
+            'url'=>['user/logout'],
+            'linkOptions'=>['data-method' => 'post'],
+        ];
+        $menuItems[] = [
+            'label' => FAS::icon('user-circle')->size(FAS::SIZE_2X),
+            'items' => $dropDownItems
+        ];
     }
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
+        'options' => ['class' => 'navbar-nav ml-auto align-items-center'],
         'items' => $menuItems,
+        'encodeLabels'=>false
     ]);
     NavBar::end();
     ?>
@@ -67,8 +85,8 @@ AppAsset::register($this);
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
-        <?= Alert::widget() ?>
-        <?= $content ?>
+<!--        --><?//= Alert::widget() ?>
+        <?= $content  ?>
     </div>
 </div>
 

@@ -7,7 +7,7 @@ use common\models\LoginForm;
 use common\fixtures\UserFixture;
 
 /**
- * Login form test
+ * Login form yii-crm
  */
 class LoginFormTest extends \Codeception\Test\Unit
 {

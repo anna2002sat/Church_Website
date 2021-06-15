@@ -9,6 +9,7 @@ $params = array_merge(
 return [
     'id' => 'app-console',
     'basePath' => dirname(__DIR__),
+    'name'=> 'ℤ𝔸 ℤ𝕀ℝ𝕂𝕆𝕐',
     'bootstrap' => ['log'],
     'controllerNamespace' => 'console\controllers',
     'aliases' => [
@@ -29,7 +30,11 @@ return [
                     'levels' => ['error', 'warning'],
                 ],
             ],
+            'mailer' => [
+                'class' => 'yii\swiftmailer\Mailer',
+            ],
         ],
+
     ],
     'params' => $params,
 ];

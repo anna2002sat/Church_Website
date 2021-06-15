@@ -11,11 +11,11 @@ return [
         'email' => 'sfriesen@jenkins.info',
     ],
     [
-        'username' => 'test.test',
+        'username' => 'yii-crm.yii-crm',
         'auth_key' => 'O87GkY3_UfmMHYkyezZ7QLfmkKNsllzT',
         // Test1234
         'password_hash' => 'O87GkY3_UfmMHYkyezZ7QLfmkKNsllzT',
-        'email' => 'test@mail.com',
+        'email' => 'yii-crm@mail.com',
         'status' => '9',
         'created_at' => '1548675330',
         'updated_at' => '1548675330',

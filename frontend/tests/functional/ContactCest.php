@@ -33,8 +33,8 @@ class ContactCest
         $I->submitForm('#contact-form', [
             'ContactForm[name]' => 'tester',
             'ContactForm[email]' => 'tester.email',
-            'ContactForm[subject]' => 'test subject',
-            'ContactForm[body]' => 'test content',
+            'ContactForm[subject]' => 'yii-crm subject',
+            'ContactForm[body]' => 'yii-crm content',
             'ContactForm[verifyCode]' => 'testme',
         ]);
         $I->seeValidationError('Email is not a valid email address.');
@@ -49,8 +49,8 @@ class ContactCest
         $I->submitForm('#contact-form', [
             'ContactForm[name]' => 'tester',
             'ContactForm[email]' => 'tester@example.com',
-            'ContactForm[subject]' => 'test subject',
-            'ContactForm[body]' => 'test content',
+            'ContactForm[subject]' => 'yii-crm subject',
+            'ContactForm[body]' => 'yii-crm content',
             'ContactForm[verifyCode]' => 'testme',
         ]);
         $I->seeEmailIsSent();

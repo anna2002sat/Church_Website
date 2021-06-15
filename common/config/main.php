@@ -1,5 +1,5 @@
 <?php
-define('YII_DEBUG', true);
+//define('YII_DEBUG', false);
 return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -9,6 +9,9 @@ return [
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
         ],
 
     ],

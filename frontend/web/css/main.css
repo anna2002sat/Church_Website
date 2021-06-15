@@ -1,0 +1,35 @@
+.icon{
+    transition: ease;
+    font-size: 70px;
+    transition-duration: 0.3s;
+}
+.icon:hover{
+    transform: scale(1.2);
+}
+.title{
+    margin: 4% auto 4% auto;
+    font-family: GamesDaymariusv2, serif;
+    font-size: 50px;
+}
+a p{
+    font-family: Ustroke, serif;
+    font-size: larger;
+    color: black;
+}
+a{
+    text-decoration: unset;
+}
+.gatherings{
+    font-family: Gabriola, serif;
+    font-size: 25px;
+}
+.col h4{
+    font-family: v_ALoveOfThunder, serif;
+    font-size: 40px;
+    text-align: center;
+}
+.title{
+    margin: 4% auto 4% auto;
+    font-family: GamesDaymariusv2, serif;
+    font-size: 50px;
+}

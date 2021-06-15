@@ -65,7 +65,7 @@ class ResendVerificationEmailFormTest extends Unit
     {
         $model = new ResendVerificationEmailForm();
         $model->attributes = [
-            'email' => 'test@mail.com'
+            'email' => 'yii-crm@mail.com'
         ];
 
         expect($model->validate())->true();
@@ -77,7 +77,7 @@ class ResendVerificationEmailFormTest extends Unit
         $mail = $this->tester->grabLastSentEmail();
 
         expect('valid email is sent', $mail)->isInstanceOf('yii\mail\MessageInterface');
-        expect($mail->getTo())->hasKey('test@mail.com');
+        expect($mail->getTo())->hasKey('yii-crm@mail.com');
         expect($mail->getFrom())->hasKey(\Yii::$app->params['supportEmail']);
         expect($mail->getSubject())->equals('Account registration at ' . \Yii::$app->name);
         expect($mail->toString())->stringContainsString('4ch0qbfhvWwkcuWqjN8SWRq72SOw1KYT_1548675330');

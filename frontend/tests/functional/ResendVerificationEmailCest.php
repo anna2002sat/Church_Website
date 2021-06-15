@@ -71,11 +71,11 @@ class ResendVerificationEmailCest
 
     public function checkSendSuccessfully(FunctionalTester $I)
     {
-        $I->submitForm($this->formId, $this->formParams('test@mail.com'));
+        $I->submitForm($this->formId, $this->formParams('yii-crm@mail.com'));
         $I->canSeeEmailIsSent();
         $I->seeRecord('common\models\User', [
-            'email' => 'test@mail.com',
-            'username' => 'test.test',
+            'email' => 'yii-crm@mail.com',
+            'username' => 'yii-crm.yii-crm',
             'status' => \common\models\User::STATUS_INACTIVE
         ]);
         $I->see('Check your email for further instructions.');

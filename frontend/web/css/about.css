@@ -1,0 +1,94 @@
+/*about Page styles*/
+.collapsible {
+    margin: 2%;
+    margin-left: 0;
+    padding: 3%;
+    cursor: pointer;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    color: rgb(27,27,27);
+    font-family: Lobster, serif;
+    font-size: larger;
+    background-color: white;
+    border-radius: 0.35em 0.35em 0.35em 0.35em;
+    box-shadow: 0em 0.15em 0.65em 0em rgba(255,255,255,0.5);
+}
+
+.activeQ, .collapsible:hover {
+    /*color: white;*/
+        background-color: dodgerblue;
+}
+
+.content {
+    padding: 1%;
+    width: 100%;
+    display: none;
+    overflow: hidden;
+    color: black;
+    background-color: lightskyblue;
+    box-shadow: 0em 0.15em 0.65em 0em rgba(255,255,255,0.25);
+}
+
+ /*Our Staff */
+
+
+.cardShadow {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
+}
+ .title{
+     margin: 4% auto 4% auto;
+     font-family: GamesDaymariusv2, serif;
+     font-size: 50px;
+}
+hr{
+    border: solid black 1px;
+}
+
+.col h4{
+    font-family: v_ALoveOfThunder;
+    font-size: 40px;
+    text-align: center;
+}
+
+
+.circles li {
+    padding: 30px;
+    border-radius: 50%;
+    flex-wrap: wrap;
+}
+.list-inline{
+    display: flex;
+    }
+.shadow{
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    /*box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;*/
+}
+.img-responsive{
+
+    flex-wrap: wrap;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.icon{
+    transition: ease;
+    font-size: 70px;
+    transition-duration: 0.3s;
+}
+.icon:hover{
+    transform: scale(1.2);
+}
+.instagram:hover{
+    padding: 45px 10px 10px;
+}
+
+.instagram {
+    border-radius:20px;
+    padding: 40px 8px 8px;
+    color: white;
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
+    transition: ease;
+    transition-duration: 0.3s;
+}

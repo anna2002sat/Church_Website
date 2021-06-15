@@ -1,0 +1,23 @@
+<?php
+
+use yii\helpers\Html;
+
+/* @var $this yii\web\View */
+/* @var $model frontend\models\Project */
+
+$this->title = 'Update Project: ' . $model->title;
+$this->params['breadcrumbs'][] = ['label' => 'Projects', 'url' => ['/project']];
+$this->params['breadcrumbs'][] = ['label' => 'My projects', 'url' => ['projects']];
+$this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['project-view', 'id' => $model->project_id]];
+$this->params['breadcrumbs'][] = 'Update';
+?>
+<div class="project-update">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+
+    <?= $this->render('_form', [
+        'model' => $model,
+        'managers' => $managers,
+    ]) ?>
+
+</div>

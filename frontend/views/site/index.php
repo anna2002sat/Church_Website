@@ -1,53 +1,100 @@
-<?php
+    <?php
 
 /* @var $this yii\web\View */
 
-$this->title = 'My Yii Application';
+use rmrevin\yii\fontawesome\FAS;
+use yii\bootstrap4\Carousel;
+
+$this->title = 'Main';
 ?>
-<div class="site-index">
-
-    <div class="jumbotron">
-        <h1>Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
+    <link rel="stylesheet" href="/frontend/web/css/main.css">
+    <div class="container-lg mt-2 mb-3 justify-content-center text-white bg-primary pt-4 pb-1 ">
+        <p style="font-family: v_ALoveOfThunder; font-size: x-large; text-align: center">
+            "Lord Jesus, change me and the world around me will be changed!"
+        </p>
     </div>
+<div class="site-index">
+    <?= Carousel::widget([
+    'items' => [
+    // the item contains only the image
+        '<img src="/frontend/web/images/carousel/1.jpg" class="img-responsive w-100 center-block" alt="церква">',
+        '<img src="/frontend/web/images/carousel/2.JPG" class="img-responsive w-100 center-block" alt="хрещення">',
+        '<img src="/frontend/web/images/carousel/3.jpg" class="img-responsive w-100 center-block" alt="новий рік">'],
+        'options' => ['class' => 'carousel slide ', 'data-interval' => '5500'],
+    ]);
+    ?>
 
-    <div class="body-content">
 
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+    <!--GUIDE INFORMATION-->
+    <div class="bg-light">
+        <div class="mt-5 mb-5">
+            <h2 class="title text-center mt-3">What are you searching?</h2>
+            <div class=" row mb-5 row-cols-md-4">
+                <div class="col-3 text-center m-0">
+                    <a href="/site/about">
+                        <i class=" fas fa-church icon" style="color: blue; "></i><br>
+                        <p class="mt-2">Info about us</p>
+                    </a>
+                </div>
 
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+                <div class="col-3 text-center m-0">
+                    <a href="https://www.youtube.com/channel/UCJXEbTgU6NbCd4x6Z94bsyw?app=desktop">
+                        <i class="icon fab fa-youtube " style="color: red"></i></br>
+                        <p class="mt-2">Our videos</p>
+                    </a>
+                </div>
+                <div class="col-3 text-center m-0">
+                    <a href="/project">
+                        <i class="icon fas fa-history " style="color: blue"></i></br>
+                        <p class="mt-2">Our projects</p>
+                    </a>
+                </div>
+                <div class="col-3 text-center m-0">
+                    <a href="about#faq">
+                        <i class="fas fa-question icon" style="color: red"></i></br>
+                        <p class="mt-2 ">FAQ</p>
+                    </a>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+                </div>
 
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
             </div>
         </div>
-
     </div>
+
+
+
+    <!--GATHERING TIMES-->
+    <div class="bg-light">
+        <div class="container-lg ">
+            <h2 class="  text-center title ">Week meetings</h2>
+            <div class="  row row-cols-1 row-cols-md-3 g-4 align-self-center mb-5">
+                <div class="col gatherings">
+                    <h4>Wednesday</h4>
+                    <hr/>
+                    <p>
+                        Prayer group for womens!
+                        <br>
+                        Time: 10:00 </p>
+
+                </div>
+                <div class="col gatherings">
+                    <h4>Friday</h4>
+                    <hr/>
+                    <p >Youth meetings at church!<br>
+                        Time: 19:00
+                    </p>
+                </div>
+                <div class="col gatherings">
+                    <h4>Sunday</h4>
+                    <hr  />
+                    <p> Sunday meetings ! <br>
+                        Time: 10:00
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
