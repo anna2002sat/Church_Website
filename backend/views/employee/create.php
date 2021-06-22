@@ -3,14 +3,12 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model backend\models\Employee */
+/* @var $model frontend\models\Employee */
 
-$this->title = 'Create Employee';
-$this->params['breadcrumbs'][] = ['label' => 'Employees', 'url' => ['index']];
+$this->title = 'Create Employee Profile';
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
-<div class="profile-create">
+<div class="employee-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

@@ -27,7 +27,7 @@ class ResendVerificationEmailForm extends Model
             ['email', 'exist',
                 'targetClass' => '\common\models\User',
                 'filter' => ['status' => User::STATUS_INACTIVE],
-                'message' => 'There is no user with this email address.'
+                'message' => 'There is no user with this email address or your email has been confirmed.'
             ],
         ];
     }
@@ -41,14 +41,13 @@ class ResendVerificationEmailForm extends Model
     {
         $user = User::findOne([
             'email' => $this->email,
-            'status' => User::STATUS_INACTIVE
         ]);
 
         if ($user === null) {
             return false;
         }
 
-        return Yii::$app
+            return Yii::$app
             ->mailer
             ->compose(
                 ['html' => 'emailVerify-html', 'text' => 'emailVerify-text'],

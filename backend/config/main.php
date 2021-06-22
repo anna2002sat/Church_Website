@@ -9,7 +9,7 @@ $params = array_merge(
 return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
-    'name'=>'CRM',
+    'name'=> 'ℤ𝔸 ℤ𝕀ℝ𝕂𝕆𝕐',
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['debug'],
     'modules' => [

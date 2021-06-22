@@ -3,12 +3,12 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model backend\models\Employee */
-
-$this->title = 'Update Employee: ' . $model->email;
+/* @var $model frontend\models\Employee */
 $this->params['breadcrumbs'][] = ['label' => 'Employees', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->email, 'url' => ['view', 'id' => $model->employee_id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Update Employee: ' . $model->first_name. " " . $model->last_name;
+
+$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="employee-update">
 
@@ -16,6 +16,7 @@ $this->params['breadcrumbs'][] = 'Update';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'update'=>true,
     ]) ?>
 
 </div>

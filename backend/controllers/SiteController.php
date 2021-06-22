@@ -1,11 +1,13 @@
 <?php
 namespace backend\controllers;
 
+
 use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use yii\web\ForbiddenHttpException;
 
 /**
  * Site controller
@@ -22,13 +24,13 @@ class SiteController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['login', 'error', 'logout'],
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index', 'about'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['Manager'],
                     ],
                 ],
             ],
@@ -70,14 +72,22 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->render('index');
         }
 
         $this->layout = 'blank';
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            if (!Yii::$app->user->can('Admin') && !Yii::$app->user->can('Manager')) {
+                $this->actionLogout();
+                Yii::$app->session->setFlash('Danger', 'Access Denied!');
+                return $this->render('login', [
+                    'model' => $model,
+                ]);
+            }
             return $this->goBack();
         } else {
             $model->password = '';
@@ -87,6 +97,7 @@ class SiteController extends Controller
             ]);
         }
     }
+
 
     /**
      * Logout action.
@@ -99,4 +110,10 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
+
+    public function actionAbout()
+    {
+        return $this->render('about');
+    }
+
 }

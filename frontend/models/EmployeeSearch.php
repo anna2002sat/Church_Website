@@ -77,7 +77,8 @@ class EmployeeSearch extends Employee
             $query->orFilterWhere(['like', 'first_name', $this->search])
                 ->orFilterWhere(['like', 'last_name', $this->search])
                 ->orFilterWhere(['like', 'email', $this->search])
-                ->orFilterWhere(['like', 'auth_assignment.item_name', $this->search]);
+                ->orFilterWhere(['like', 'auth_assignment.item_name', $this->search])
+                ->andFilterWhere(['verified' => $this->verified]);
             $this->full_name=$this->email=$this->role='';
         }
         else{
@@ -91,7 +92,8 @@ class EmployeeSearch extends Employee
                 ->orFilterWhere(['like', 'last_name', $this->full_name])
                 ->andFilterWhere(['like', 'email', $this->email])
 //                ->andFilterWhere(['like', 'image', $this->image])
-                ->andFilterWhere(['like', 'auth_assignment.item_name', $this->role]);
+                ->andFilterWhere(['like', 'auth_assignment.item_name', $this->role])
+                ->andFilterWhere(['verified' => $this->verified]);
 
             if (isset($this->full_role)){
                 $query->andFilterWhere(['auth_assignment.item_name'=>$this->full_role]);

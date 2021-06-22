@@ -89,11 +89,11 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
                 Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
+                return $this->refresh();
             } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
+                    Yii::$app->session->setFlash('error', 'There was an error sending your message.');
             }
 
-            return $this->refresh();
         } else {
             return $this->render('contact', [
                 'model' => $model,
@@ -109,6 +109,7 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+
 
 
 }

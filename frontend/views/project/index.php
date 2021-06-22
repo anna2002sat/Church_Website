@@ -10,7 +10,7 @@ use yii\widgets\ListView;
 /* @var $searchModel frontend\models\ProjectSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Projects';
+$this->title = ($isMyProjects ? 'My Projects':'Projects');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="project-index">
@@ -22,12 +22,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row text-center">
     <?if (Yii::$app->user->can('Manager')):?>
     <p class="container  col-6">
-        <?= Html::a('Create Project', ['create'], ['class' => 'btn btn-outline-info w-75', 'style'=>"font-family: 'Algerian'; font-size: x-large;"]) ?>
+        <?= Html::a('Create Project', ['create', 'isMyProjects'=>$isMyProjects], ['class' => 'btn btn-outline-info w-75', 'style'=>"font-family: 'Algerian'; font-size: x-large;"]) ?>
     </p>
     <? endif;?>
-        <?if (Yii::$app->user->can('Employee')):?>
+        <?if (Yii::$app->user->can('Employee') && !$isMyProjects):?>
         <p class="container col-6">
-            <?= Html::a('My Projects', ['employee/projects'], ['class' => 'btn btn-outline-primary w-75', 'style'=>"font-family: 'Algerian'; font-size: x-large;"]) ?>
+            <?= Html::a('My Projects', ['index', 'isMyProjects'=>true], ['class' => 'btn btn-outline-primary w-75', 'style'=>"font-family: 'Algerian'; font-size: x-large;"]) ?>
         </p>
     <? endif;?>
     </div>
@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //        ],
 //    ]); ?>
 
-<!--    Authors correlation    -->-->
+<!--    Authors correlation    -->
 <!--    <div class="col">-->
 <!--        <div id="authorsChart" style="width: 500px; height: 400px"></div>-->
 <!--    </div>-->
@@ -99,8 +99,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card card-block mb-4 border-2  shadow-lg" style="width: 18rem;">
                     <?if (Yii::$app->user->can('updateProject', ['project' => Project::findOne(['project_id'=>$project->project_id])])):?>
                         <div class="card-header align-self-end" style="background-color: white">
-                            <?= Html::a(FAS::icon('edit')->size('lg'), ['update', 'id'=>$project->project_id], ['style' =>'color: info;' ]) ?>
-                            <?= Html::a(FAS::icon('trash')->size('lg'), ['delete', 'id'=>$project->project_id],
+                            <?= Html::a(FAS::icon('edit')->size('lg'), ['update', 'id'=>$project->project_id, 'isMyProjects'=>$isMyProjects], ['style' =>'color: info;' ]) ?>
+                            <?= Html::a(FAS::icon('trash')->size('lg'), ['delete', 'id'=>$project->project_id, 'isMyProjects'=>$isMyProjects],
                                 ['class' => 'btn btn-close p-0', 'style'=>'color: red;',
                                     'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                                     'data-method'=>'post']) ?>
@@ -114,9 +114,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <div class="text-right">
                             <?if (Yii::$app->user->can('updateProject', ['project' => Project::findOne(['project_id'=>$project->project_id])])):?>
-                                <?= Html::a('Change image', ['update-image', 'id'=>$project->project_id], ['class' => 'btn btn-warning m-1']) ?>
+                                <?= Html::a('Change image', ['update-image', 'id'=>$project->project_id, 'isMyProjects'=>$isMyProjects], ['class' => 'btn btn-outline-danger font-weight-bold ']) ?>
                             <? endif;?>
-                            <?= Html::a('More', ['view', 'id'=>$project->project_id], ['class' => 'btn btn-primary m-1']) ?>
+                            <?= Html::a('More info', ['view', 'isMyProjects'=>$isMyProjects, 'id'=>$project->project_id], ['class' => 'btn btn-outline-info font-weight-bold']) ?>
 
                         </div>
                     </div>
@@ -136,14 +136,14 @@ $this->params['breadcrumbs'][] = $this->title;
 <!--        var authors = google.visualization.arrayToDataTable([-->
 <!--            ['Author', 'Number of projects'],-->
 <!--            --><?// foreach ($authorsStat as $author):?>
-//                ["<?//=$author['author']['first_name']." ".$author['author']['last_name']?>//",  <?//= $author['count']?>//],
-//            <?// endforeach;?>
-//        ]);
-//        var optionsAuthors = {
-//            title: 'Author correlation',
-//            is3D: true,
-//        };
-//        var authorsChart = new google.visualization.PieChart(document.getElementById('authorsChart'));
-//        authorsChart.draw(authors, optionsAuthors);
-//    }
-//</script>
+<!--                ["--><?//=$author['author']['first_name']." ".$author['author']['last_name']?><!--//",  --><?//= $author['count']?><!--//],-->
+<!--            --><?// endforeach;?>
+<!--        ]);-->
+<!--        var optionsAuthors = {-->
+<!--            title: 'Author correlation',-->
+<!--            is3D: true,-->
+<!--        };-->
+<!--        var authorsChart = new google.visualization.PieChart(document.getElementById('authorsChart'));-->
+<!--        authorsChart.draw(authors, optionsAuthors);-->
+<!--    }-->
+<!--</script>-->

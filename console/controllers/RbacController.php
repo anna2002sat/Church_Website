@@ -6,8 +6,10 @@ namespace console\controllers;
 
 use Yii;
 use yii\console\Controller;
+use yii\db\Migration;
+use yii\db\Schema;
 
-class RbacController extends Controller
+class RbacController extends Migration
 {
     public function actionInit()
     {

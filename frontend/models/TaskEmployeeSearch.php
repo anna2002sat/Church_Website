@@ -72,6 +72,7 @@ class TaskEmployeeSearch extends TaskEmployee
         }
 
         $query->andFilterWhere(['like', 'email', $this->email])
+            ->andFilterWhere(['task_employee.verified'=>$this->verified])
             ->andFilterWhere(['like', 'first_name', $this->full_name])
             ->orFilterWhere(['like', 'last_name', $this->full_name]);
 

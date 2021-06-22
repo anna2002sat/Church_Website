@@ -36,7 +36,8 @@ class EmployeeUploadForm extends Model
     }
 
     public function saveImage($id){
-        $this->imageFile = UploadedFile::getInstance($this, 'imageFile');
+        if(!$this->imageFile)
+            $this->imageFile = UploadedFile::getInstance($this, 'imageFile');
         if(!$this->validate()){
             return false;
         }
@@ -52,5 +53,6 @@ class EmployeeUploadForm extends Model
             FileSystem::deleteFile($this->getFolder() . $this->newImageName);
             return false;
         }
+        return false;
     }
 }

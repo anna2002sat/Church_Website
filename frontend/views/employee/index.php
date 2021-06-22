@@ -2,12 +2,15 @@
 
 use frontend\models\Employee;
 use rmrevin\yii\fontawesome\FAS;
+use kartik\rating\StarRating;
+use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Html;
 use yii\grid\GridView;
 use yii\web\ForbiddenHttpException;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\EmployeeSearch */
+/* @var $searchModel frontend\models\EmployeeSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Employees';
@@ -78,11 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //                        ]);
 //                    },
 //                    'delete'=>function($url, $model){
-//                        return Html::a(FAS::icon('trash'), $url,[
-//                            'title' => Yii::t('app', 'Delete'),
-//                            'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-//                            'data-method'=>'post',
-//                        ]);
+//                        return Html::a(FAS::icon('trash'), $url,aq);
 //                    },
 //                ],
 //
@@ -95,10 +94,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
         <div class="row ">
             <?php foreach ($employees as $employee):?>
-                <div class="col-md-3  d-flex justify-content-center" style="min-height: 400px; min-width: 100px">
+                <div class="col-md-3  d-flex justify-content-center h-100 align-self-center" style="min-height: 400px; min-width: 100px">
                     <div class="card mb-4 border-2 shadow-lg" style="width: 18rem;">
                         <?if (Yii::$app->user->can('employeeUpdate', ['employee' => Employee::findOne(['employee_id'=>$employee['employee_id']])])):?>
                             <div class="card-header text-right" style="background-color: white">
+
                                 <?= Html::a(FAS::icon('edit')->size('lg'), ['update', 'id'=>$employee['employee_id']], ['style' =>'color: info;' ]) ?>
                                 <?= Html::a(FAS::icon('trash')->size('lg'), ['delete', 'id'=>$employee['employee_id']],
                                     ['class' => 'btn btn-close p-0', 'style'=>'color: red;',
@@ -110,12 +110,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="card-body">
                             <h5 class="card-title"><?= Employee::findOne(['employee_id'=>$employee['employee_id']])->getFullname()?></h5>
                             <h6 class="card-subtitle mb-2 text-muted"><?= Employee::findOne(['employee_id'=>$employee['employee_id']])->getRole()?></h6>
-                            <p class="card-text">Contact Email: <?= $employee['email']?></p>
+                                <p class="card-text">Contact Email: <?= $employee['email']?></p>
                             <div class="text-right">
                                 <?if (Yii::$app->user->can('employeeUpdate', ['employee' => Employee::findOne(['employee_id'=>$employee['employee_id']])])):?>
-                                    <?= Html::a('See Profile', ['view', 'id'=>$employee['employee_id']], ['class' => 'btn btn-primary m-1']) ?>
+                                    <?= Html::a('See Profile', ['view', 'id'=>$employee['employee_id']], ['class' => 'btn m-1 btn-outline-success font-weight-bold']) ?>
                                 <? else:?>
-                                    <?= Html::a('See Productivity', ['view', 'id'=>$employee['employee_id']], ['class' => 'btn btn-info m-1']) ?>
+                                    <?= Html::a('See Productivity', ['view', 'id'=>$employee['employee_id']], ['class' => 'btn m-1 btn-outline-info font-weight-bold']) ?>
                                 <? endif;?>
 
                             </div>

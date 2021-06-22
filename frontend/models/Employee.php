@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use common\models\User;
+use frontend\models\user_forms\ResendVerificationEmailForm;
 use Yii;
 
 
@@ -16,6 +17,8 @@ use Yii;
  * @property int|null $user_id
  * @property string $gender
  * @property string|null $image
+ * @property int $verified
+ * @property string|null $about
  *
  * @property User $user
  */
@@ -36,9 +39,10 @@ class Employee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['first_name', 'last_name', 'email', 'gender'], 'required'],
+            [['first_name', 'last_name', 'gender'], 'required'],
             [['first_name', 'last_name', 'email'], 'string', 'max' => 255],
             [['email'], 'unique'],
+            [['about'], 'string'],
             [['email'], 'email'],
         ];
     }
@@ -56,6 +60,7 @@ class Employee extends \yii\db\ActiveRecord
             'user_id' => 'User ID',
             'gender' => 'Gender',
             'image' => 'Image',
+            'about' => 'About you',
         ];
     }
 
@@ -117,13 +122,33 @@ class Employee extends \yii\db\ActiveRecord
         if($insert){
             if($user = \frontend\models\User::findOne(['email'=>$this->email])){ // user registered
                 $this->user_id = $user->id;
-                $auth = Yii::$app->authManager;
-                $employee= $auth->getRole('Employee');
-                $auth->assign($employee,$user->id);
             }
         }
-        else if($this->user_id && $user = User::findOne(['email'=>$this->email])){
-            $this->user_id = $user->id;
+        else
+            if($this->user_id){
+                if($user = User::findOne(['email'=>$this->email])){
+                    $this->user_id = $user->id;
+                }
+                if($user = User::findOne(['id'=>$this->user_id])) {
+                    if($user->email!=$this->email){
+                        if(!Yii::$app->user->can('Admin')){
+                            $model = new ResendVerificationEmailForm();
+                            $model->email=$this->email;
+                            $user->status = User::STATUS_INACTIVE;
+                            $user->email = $this->email;
+                            $user->save();
+                            if ($model->sendEmail()) {
+                                Yii::$app->session->setFlash('success', 'Check your email for further instructions to login to your account.');
+                            }else{
+                                Yii::$app->session->setFlash('error', 'Sorry, we are unable to resend verification email for the provided email address.');
+
+                            }
+                        }
+                        else
+                            Yii::$app->session->setFlash('success', 'Email has been updated!');
+
+                    }
+                }
         }
         return parent::beforeSave($insert);
     }

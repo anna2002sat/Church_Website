@@ -71,7 +71,7 @@ class ProjectSearch extends Project
             // $query->where('0=1');
             return $dataProvider;
         }
-        if( $search!='') {
+        if( $this->search=='') {
             // grid filtering conditions
             $query->andFilterWhere([
                 'project_id' => $this->project_id,

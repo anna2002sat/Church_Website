@@ -1,6 +1,7 @@
 <?php
 namespace common\models;
 
+use frontend\models\Employee;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -210,13 +211,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
-    }
-    public function beforeSave($insert)
-    {
-        if($insert){
-            $this->status = 10;
-        }
-        return parent::beforeSave($insert);
     }
 
     public function afterSave($insert, $changedAttributes)

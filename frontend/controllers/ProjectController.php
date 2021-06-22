@@ -43,28 +43,26 @@ class ProjectController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index','view', 'create', 'update', 'delete','tasks',
-                    'task-view', 'task-create', 'task-update', 'task-delete', 'doers', 'delete_doer', 'update-image'],
+                'only' => ['index','view', 'create', 'update', 'delete', 'update-image'],
                 'rules' => [
                     [
                         'allow' => false,
-                        'actions' => ['create', 'update', 'task-create', 'task-update', 'task-delete', 'delete_doer', 'tasks'],
+                        'actions' => ['create', 'update', 'delete'],
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view'],
                         'roles' => ['?'],
                     ],
                     [
                         'allow' => true,
                         'actions' => ['index','view'],
-                        'roles' => ['?'],
-                    ],
-
-                    [
-                        'allow' => true,
-                        'actions' => ['index', 'view', 'task-view', 'task-update', 'doers', 'tasks'],
                         'roles' => ['Employee'],
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['create', 'delete', 'update', 'task-delete', 'delete_doer', 'update-image',  'task-create'],
+                        'actions' => ['create', 'delete', 'update', 'update-image'],
                         'roles' => ['Manager'],
                     ]
 
@@ -78,21 +76,37 @@ class ProjectController extends Controller
 
     /**
      * Lists all Project models.
+     * @param bool $employee_id
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($isMyProjects=false)
     {
         $searchModel = new ProjectSearch();
 
+        if($isMyProjects){
+            if(Yii::$app->user->isGuest || !Yii::$app->user->can('Employee')){
+                throw new ForbiddenHttpException("Access Denied");
+            }
+            $employee = Employee::findOne(['user_id'=>Yii::$app->user->getId()]);
+
+            if($employee->verified!=true){
+                throw new ForbiddenHttpException("Access Denied");
+            }
+            $employee_id = $employee->employee_id;
+            $my_projects = Project::find()->select('project_id')->where(['author_id'=>$employee_id])->asArray()->all();
+            $my_tasks_ids = TaskEmployee::find()->select('task_id')->where(['employee_id' => $employee_id])->asArray()->all();
+            $my_taskProject_ids = Task::find()->where(['in','task_id', $my_tasks_ids])->select('project_id')->asArray()->all();
+            $my_project_ids = Project::find()->where(['in','project_id', $my_taskProject_ids])->orWhere(['in','project_id', $my_projects])->select('project_id')->distinct()->asArray()->all();
+
+            $searchModel->project_ids=$my_project_ids;
+            $isMyProjects = true;
+        }
         $projects = $searchModel->search(Yii::$app->request->queryParams);
-
         $projects = $projects->getModels();
-        $authorsStat = $this->authorStatistics();
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'projects' => $projects,
-            'authorsStat' => $authorsStat
+            'isMyProjects' => $isMyProjects
         ]);
     }
 
@@ -102,33 +116,27 @@ class ProjectController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id = 1)
+    public function actionView($isMyProjects=false, $id = 1)
     {
         $model= $this->findModel($id);
         $genderChart = $model->getGenderChart();
         $statusChart = $model->getStatusChart();
         $completionChart = $model->getCompletionChart();
         $overDueChart = $model->getOverDueChart();
-        $empty = Task::find()->where(['project_id'=>$id])->select('task_id')->count();
-        return $this->render('view', compact('model', 'empty', 'genderChart', 'statusChart', 'completionChart', 'overDueChart'));
+        $notEmpty = Task::find()->where(['project_id'=>$id])->select('task_id')->count();
+//        $comments = Comment::find()->all();
+        return $this->render('view', compact('model', 'notEmpty', 'genderChart', 'statusChart', 'completionChart', 'overDueChart', 'isMyProjects', 'comments'));
     }
 
 
-    public function actionTasks($project_id = 1){
-        $searchModel = new TaskSearch();
-        $searchModel->project_id=$project_id;
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        $model = $this->findModel($project_id);
-        return $this->render('task/index', compact('model', 'dataProvider', 'searchModel'));
-    }
 
     /**
      * Creates a new Project model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($isMyProjects)
     {
         $model = new Project();
         if ($model->load(Yii::$app->request->post())){
@@ -136,16 +144,17 @@ class ProjectController extends Controller
             $upload->image = UploadedFile::getInstance($model, 'image');
             if($model->save()) {
                 $upload->saveImage($model->project_id);
-                return $this->redirect(['view', 'id' => $model->project_id]);
+                return $this->redirect(['view', 'id' => $model->project_id, 'isMyProjects'=>$isMyProjects]);
             }
         }
         return $this->render('create', [
             'model' => $model,
-            'managers' => $this->allManagers()
+            'managers' => $this->allManagers(),
+            'isMyProjects'=>$isMyProjects,
         ]);
     }
 
-    public function actionUpdateImage($id){
+    public function actionUpdateImage($id, $isMyProjects){
         $project = $this->findModel($id);
         if (!Yii::$app->user->can('updateProject', ['project'=>$project])){
             throw new ForbiddenHttpException("Access Denied");
@@ -153,12 +162,13 @@ class ProjectController extends Controller
         $model = new ProjectUploadForm();
         if (Yii::$app->request->isPost){
             if ($model->saveImage($id)){
-                return $this->redirect(['view', 'id' =>$project->project_id]);
+                return $this->redirect(['view', 'id' =>$project->project_id, 'isMyProjects'=>$isMyProjects]);
             }
         }
         return $this->render('upload', [
             'model'=>$model,
             'project'=>$project,
+            'isMyProjects'=>$isMyProjects,
             ]);
     }
 
@@ -169,25 +179,26 @@ class ProjectController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $isMyProjects)
     {
         $model = $this->findModel($id);
         if (!Yii::$app->user->can('updateProject', ['project'=>$model])){
             throw new ForbiddenHttpException("Access Denied");
         }
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->save($id)){
-                return $this->redirect(['view', 'id' => $model->project_id]);
+            if ($model->save()){
+                return $this->redirect(['view', 'id' => $model->project_id, 'isMyProjects'=>$isMyProjects]);
             }
         }
         return $this->render('update', [
             'model' => $model,
-            'managers' => $this->allManagers()
+            'managers' => $this->allManagers(),
+            'isMyProjects'=>$isMyProjects
         ]);
     }
     private function allManagers(){
         $managersIds = AuthAssignment::find()->select('user_id')->where(['item_name' => 'Manager'])->orWhere(['item_name' => 'Admin'])->asArray()->all();
-        $managers = Employee::find()->where(['in', 'user_id', $managersIds])->asArray()->all();
+        $managers = Employee::find()->where(['in', 'user_id', $managersIds])->where(['verified'=>true])->asArray()->all();
         for ($i = 0; $i < count($managers); $i++) {
             $managers[$i]['fullname'] = $managers[$i]['first_name'] . ' ' . $managers[$i]['last_name'];
         }
@@ -200,7 +211,7 @@ class ProjectController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $isMyProjects)
     {
         $model= $this->findModel($id);
         if (!Yii::$app->user->can('updateProject', ['project'=>$model])){
@@ -210,7 +221,7 @@ class ProjectController extends Controller
         TaskEmployee::deleteAll(['task_id'=>$tasks]);
         Task::deleteAll(['project_id'=>$id]);
         $model->delete();
-        return $this->redirect(['index']);
+        return $this->redirect(['index', 'isMyProjects'=>$isMyProjects]);
     }
 
 
@@ -228,102 +239,6 @@ class ProjectController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    protected function findTaskModel($id)
-    {
-        if (($model = Task::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    public function actionTaskView($id)
-    {
-        return $this->render('task/view', [
-            'model' => $this->findTaskModel($id),
-        ]);
-    }
-    public function actionTaskCreate($project_id)
-    {
-        $model = new Task();
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['task-view', 'id' => $model->task_id]);
-        }
-        $project = Project::findOne(['project_id'=>$project_id]);
-        $model->project_id = $project->project_id;
-        return $this->render('task/create', [
-            'model' => $model,
-        ]);
-    }
-
-    public function actionTaskUpdate($id)
-    {
-        $model = $this->findTaskModel($id);
-
-        if (!Yii::$app->user->can('updateTask', ['task' => $model])) {
-            throw new ForbiddenHttpException("Access Denied");
-        }
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['task-view', 'id' => $model->task_id]);
-        }
-
-        return $this->render('task/update', [
-            'model' => $model,
-        ]);
-    }
-
-    public function actionTaskDelete($id)
-    {
-        $model = $this->findTaskModel($id);
-        $project = Project::findOne(['project_id' => $model->project_id]);
-        if (!Yii::$app->user->can('updateProject', ['project' => $project])) {
-            throw new ForbiddenHttpException("Access Denied");
-        }
-        TaskEmployee::deleteAll(['task_id'=>$id]);
-        $model->delete();
-
-        return $this->redirect(['tasks', 'project_id'=>$project->project_id]);
-    }
-
-    public function actionDoers($task_id)
-    {
-        $model = $this->findTaskModel($task_id);
-        $doer = new Doer();
-
-        if (Yii::$app->request->isPjax) {
-            $doer->load(Yii::$app->request->post());
-            if ($doer->doer_id > 0) {
-                $new_doer = new TaskEmployee();
-                $new_doer->task_id = $task_id;
-                $new_doer->employee_id = $doer->doer_id;
-                $new_doer->save();
-                $doer->doer_id = 0;
-            }
-        }
-
-        $doers_ids = TaskEmployee::find()->select('employee_id')->where(['task_id' => $task_id])->asArray()->all();
-
-        $searchModel= new TaskEmployeeSearch();
-        $searchModel->task_id=$task_id;
-        $doers = $searchModel->search(Yii::$app->request->queryParams);
-
-        $free_employees = Employee::find()->where(['not in', 'employee_id', $doers_ids])->all();
-
-
-        return $this->render('task/doers', [
-            'model' => $model,
-            'doers' => $doers,
-            'doer' => $doer,
-            'free_employees' => $free_employees,
-            'searchModel'=>$searchModel
-        ]);
-    }
-
-    public function actionDelete_doer($doer, $task)
-    {
-        $cancel_doer = TaskEmployee::findOne(['task_id' => $task, 'employee_id' => $doer]);
-        $cancel_doer->delete();
-        return $this->redirect(['doers', 'task_id' => $task]);
     }
 
     public function authorStatistics(){  /////// GROUP BY

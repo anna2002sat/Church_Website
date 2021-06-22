@@ -9,7 +9,7 @@ use Yii;
  *
  * @property int $task_id
  * @property int $employee_id
- *
+ * @property int $verified
  * @property Task $task
  * @property Employee $employee
  */

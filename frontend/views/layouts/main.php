@@ -43,25 +43,38 @@ AppAsset::register($this);
         ['label' => 'Projects', 'url' => ['/project/index']],
 
     ];
+    if (!Yii::$app->user->isGuest && Yii::$app->user->can('Employee')) {
+        $menuItems[] = ['label' => 'Employees', 'url' => ['/employee']];
+    }
+    $menuItems[] = ['label' => 'About', 'url' => ['/site/about']];
+    $menuItems[] = ['label' => 'Contact us', 'url' => ['/site/contact']];
+
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'About', 'url' => ['/site/about']];
-        $menuItems[] = ['label' => 'Contact us', 'url' => ['/site/contact']];
         $menuItems[] = ['label' => 'Register', 'url' => ['/user/signup'], 'class'=>'navItem'];
         $menuItems[] = ['label' => 'Log in', 'url' => ['/user/login']];
-    } else {
-        if (Yii::$app->user->can('Employee')) {
-        $menuItems[] = ['label' => 'Employees', 'url' => ['/employee']];
+
+    }
+    $menuItems[] = [
+        'label' => FAS::icon('donate')->size(FAS::SIZE_2X),
+        'url' => ['/donation/create']
+    ];
+    if (!Yii::$app->user->isGuest) {
+        if (Yii::$app->user->can('Manager')) {
+            $menuItems[] = [
+                'label' => FAS::icon('bell')->size(FAS::SIZE_2X),
+                'url' => ['/employee/messages']
+            ];
         }
-        $menuItems[] =['label' => 'About', 'url' => ['/site/about']];
-        $menuItems[] =['label' => 'Contact us', 'url' => ['/site/contact']];
         if (Yii::$app->user->can('Employee')) {
-            $dropDownItems[] = ['label' => 'My Projects', 'url' => '/employee/projects'];
+            $dropDownItems[] = ['label' => 'My Projects', 'url' => ['/project/index', 'isMyProjects'=>true]];
             $dropDownItems[] = "<div class='dropdown-divider'></div>";
-            $dropDownItems[] = ['label' => 'My Tasks', 'url' => '/employee/task-index'];
+            $dropDownItems[] = ['label' => 'My Tasks', 'url' => ['/task/index','isMyProjects'=>false, 'isMyTasks'=>true]];
             $dropDownItems[] = "<div class='dropdown-divider'></div>";
         }
 
         $dropDownItems[] = ['label'=>'My Employee Profile', 'url'=>'/employee/my-profile'];
+        $dropDownItems[] = "<div class='dropdown-divider'></div>";
+        $dropDownItems[] = ['label'=>'My Donations', 'url'=>['/donation', 'my'=>true]];
         $dropDownItems[] = "<div class='dropdown-divider'></div>";
         $dropDownItems[] = [
             'label'=>'Log Out (' . Yii::$app->user->identity->username . ')',
@@ -85,7 +98,7 @@ AppAsset::register($this);
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
-<!--        --><?//= Alert::widget() ?>
+        <?= Alert::widget() ?>
         <?= $content  ?>
     </div>
 </div>
@@ -93,8 +106,7 @@ AppAsset::register($this);
 <footer class="footer">
     <div class="container">
         <p class="pull-left">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
-
-        <p class="pull-right"><?= Yii::powered() ?></p>
+            <div class="pull-right">Created by Anna Strelchenko</div>
     </div>
 </footer>
 

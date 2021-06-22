@@ -1,5 +1,7 @@
+
 <?php
 
+use kartik\rating\StarRating;
 use rmrevin\yii\fontawesome\FAS;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -21,15 +23,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
         <div class="row container">
             <div class="col-sm-4 text-center">
-                <p class="text-center w-100">
+                <div class="text-center w-100">
 
-                    <?=Html::img($model->getImage());?>
+                    <?=Html::img($model->getImage(), ['class'=>'w-100']);?>
 
                     <br><br>
                     <?  if (Yii::$app->user->can('employeeUpdate', ['employee'=>$model])):?>
                         <?= Html::a('Update Image', ['update-image', 'id' => $model->employee_id], ['class' => 'btn btn-outline-primary w-100']) ?>
                     <?endif;?>
-                </p>
+                </div>
             </div>
             <div class="col-sm-8">
                 <?= DetailView::widget([
@@ -38,21 +40,25 @@ $this->params['breadcrumbs'][] = $this->title;
                         'first_name',
                         'last_name',
                         'email:email',
-                        'gender'
+                        'gender',
+                        'about'
                     ],
                 ]) ?>
                 <?  if (Yii::$app->user->can('employeeUpdate', ['employee'=>$model])):?>
                 <div class="row ">
-                    <p class="col-6  text-left"><?=Html::a('Edit info', ['update', 'id' => $model->employee_id], ['class' => 'btn btn-outline-info  w-100']);?></p>
-                    <p class="col-6  text-right"><?=Html::a('Delete my account', ['delete', 'id' => $model->employee_id],
+                    <p class="col  text-left"><?=Html::a('Edit info', ['update', 'id' => $model->employee_id], ['class' => 'btn btn-outline-info  w-100']);?></p>
+                    <?if(!($model->user_id==Yii::$app->user->getId() && Yii::$app->user->can('Admin'))):?>
+                    <p class="col  text-right"><?=Html::a('Delete my employee account', ['delete', 'id' => $model->employee_id],
                             ['class' => 'btn btn-outline-danger w-100 ',
                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                                 'data-method'=>'post']);?></p>
+                    <? endif;?>
 
                 <?endif;?>
                 </div>
             </div>
         </div>
+
         <? if ($empty):?>
             <h1 class="container text-center" style="font-family: 'Algerian'">Productivity</h1>
             <div class="row ">
@@ -79,6 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.3.min.js" charset="utf-8"></script>
 <script type="text/javascript">
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawChart);

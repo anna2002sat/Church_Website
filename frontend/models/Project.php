@@ -16,6 +16,9 @@ use Yii;
  * @property int count = ""
  * @property Employee $author
  * @property Task[] $tasks
+ * @property float|null $needed_sum
+ * @property float|null $collected_sum
+ *
  */
 
 class Project extends \yii\db\ActiveRecord
@@ -38,7 +41,9 @@ class Project extends \yii\db\ActiveRecord
             [['title'], 'required'],
             [['description'], 'string'],
             [['title', 'image', 'video_url'], 'string', 'max' => 255],
-            ['video_url', 'validateVideo']
+            [['needed_sum', 'collected_sum'], 'number'],
+            ['video_url', 'validateVideo'],
+            ['author_id', 'integer'],
 
         ];
     }
@@ -52,9 +57,10 @@ class Project extends \yii\db\ActiveRecord
             return $matches[5];
         return false;
     }
+
     public function validateVideo($model, $attribute){
         $validateUrl=$this->checkURL($this->video_url);
-        if($validateUrl!==false){
+        if($validateUrl!=false){
             $this->video_url = "https://www.youtube.com/embed/$validateUrl";
             return true;
         }
@@ -74,6 +80,8 @@ class Project extends \yii\db\ActiveRecord
             'image' => 'Image',
             'video_url' => 'Video Url',
             'author_id' => 'Author',
+            'needed_sum' => 'Needed Sum',
+            'collected_sum' => 'Collected Sum',
         ];
     }
 
