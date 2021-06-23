@@ -97,13 +97,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-md-3  d-flex justify-content-center h-100 align-self-center" style="min-height: 400px; min-width: 100px">
                     <div class="card mb-4 border-2 shadow-lg" style="width: 18rem;">
                         <?if (Yii::$app->user->can('employeeUpdate', ['employee' => Employee::findOne(['employee_id'=>$employee['employee_id']])])):?>
+
                             <div class="card-header text-right" style="background-color: white">
 
                                 <?= Html::a(FAS::icon('edit')->size('lg'), ['update', 'id'=>$employee['employee_id']], ['style' =>'color: info;' ]) ?>
+                                <?if(!(Yii::$app->user->can('Admin') && $employee['user_id']==Yii::$app->user->getId())):?>
                                 <?= Html::a(FAS::icon('trash')->size('lg'), ['delete', 'id'=>$employee['employee_id']],
                                     ['class' => 'btn btn-close p-0', 'style'=>'color: red;',
                                         'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
                                         'data-method'=>'post']) ?>
+                                <? endif;?>
                             </div>
                         <? endif;?>
                         <img class="card-img-top" src="<?= Employee::findOne(['employee_id'=>$employee['employee_id']])->getImage()?>" alt="image" style="width:100%">

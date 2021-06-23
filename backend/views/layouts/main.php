@@ -69,6 +69,10 @@ AppAsset::register($this);
 
         $dropDownItems[] = ['label'=>'My Employee Profile', 'url'=>['/employee/my-profile']];
         $dropDownItems[] = "<div class='dropdown-divider'></div>";
+        if (Yii::$app->user->can('Admin')){
+            $dropDownItems[] = ['label'=>'Donations', 'url'=>['/donation']];
+            $dropDownItems[] = "<div class='dropdown-divider'></div>";
+        }
         $dropDownItems[] = ['label'=>'My Donations', 'url'=>['/donation', 'my'=>true]];
         $dropDownItems[] = "<div class='dropdown-divider'></div>";
         $dropDownItems[] = [

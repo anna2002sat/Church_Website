@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+<div style="max-width: 1310px">
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -36,11 +36,6 @@ $this->params['breadcrumbs'][] = $this->title;
 //            'donation_id',
             'first_name',
             'last_name',
-            [
-                'attribute'=>'email',
-                'visible' => !$my
-
-            ],
             'phone',
             'amount',
             [
@@ -50,12 +45,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter'=>ArrayHelper::map(array_merge([['project_id'=>'-1', 'title'=>'Unassigned']],
                         Donation::Purposes()), 'project_id', 'title'),
             ],
-            'comments:ntext',
 
-            ['class' => 'yii\grid\ActionColumn',
-                'template'=>'{delete}'],
+            [
+                'attribute' => 'comments',
+                'contentOptions' => [
+                    'style' => [
+                        'max-width' => '1000px',
+                        'white-space' => 'normal',
+                    ],
+                ],
+            ],
         ],
     ]); ?>
-
+</div>
 
 </div>

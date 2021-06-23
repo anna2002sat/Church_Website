@@ -20,16 +20,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <div class="row text-center">
-    <?if (Yii::$app->user->can('Manager')):?>
-    <p class="container  col-6">
-        <?= Html::a('Create Project', ['create', 'isMyProjects'=>$isMyProjects], ['class' => 'btn btn-outline-info w-75', 'style'=>"font-family: 'Algerian'; font-size: x-large;"]) ?>
-    </p>
-    <? endif;?>
         <?if (Yii::$app->user->can('Employee') && !$isMyProjects):?>
         <p class="container col-6">
             <?= Html::a('My Projects', ['index', 'isMyProjects'=>true], ['class' => 'btn btn-outline-primary w-75', 'style'=>"font-family: 'Algerian'; font-size: x-large;"]) ?>
         </p>
-    <? endif;?>
+        <? endif;?>
     </div>
 
         <?php  echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -97,15 +92,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php foreach($projects as $project):?>
             <div class="col-md-4 h-100 d-flex justify-content-center align-self-center" style="min-height: 400px; min-width: 100px">
                 <div class="card card-block mb-4 border-2  shadow-lg" style="width: 18rem;">
-                    <?if (Yii::$app->user->can('updateProject', ['project' => Project::findOne(['project_id'=>$project->project_id])])):?>
-                        <div class="card-header align-self-end" style="background-color: white">
-                            <?= Html::a(FAS::icon('edit')->size('lg'), ['update', 'id'=>$project->project_id, 'isMyProjects'=>$isMyProjects], ['style' =>'color: info;' ]) ?>
-                            <?= Html::a(FAS::icon('trash')->size('lg'), ['delete', 'id'=>$project->project_id, 'isMyProjects'=>$isMyProjects],
-                                ['class' => 'btn btn-close p-0', 'style'=>'color: red;',
-                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                    'data-method'=>'post']) ?>
-                        </div>
-                    <? endif;?>
                     <img class="card-img-top" src="<?= Project::findOne(['project_id'=>$project->project_id])->getImage()?>" alt="Card image cap">
                     <div class="card-body">
                         <h5 class="card-title"><?=$project->title?></h5>
@@ -113,9 +99,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         <p class="card-text"><?= $project->description?></p>
 
                         <div class="text-right">
-                            <?if (Yii::$app->user->can('updateProject', ['project' => Project::findOne(['project_id'=>$project->project_id])])):?>
-                                <?= Html::a('Change image', ['update-image', 'id'=>$project->project_id, 'isMyProjects'=>$isMyProjects], ['class' => 'btn btn-outline-danger font-weight-bold ']) ?>
-                            <? endif;?>
                             <?= Html::a('More info', ['view', 'isMyProjects'=>$isMyProjects, 'id'=>$project->project_id], ['class' => 'btn btn-outline-info font-weight-bold']) ?>
 
                         </div>

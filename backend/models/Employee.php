@@ -95,7 +95,7 @@ class Employee extends \yii\db\ActiveRecord
             return 'Employee';
     }
     public function getGenderChart($my_tasks){
-        $doers_ids = TaskEmployee::find()->where(['in', 'task_id', $my_tasks])->select('employee_id')->asArray()->all();
+        $doers_ids = TaskEmployee::find()->where(['in', 'task_id', $my_tasks])->andWhere(['verified'=>true])->select('employee_id')->asArray()->all();
         $result['females'] = Employee::find()->where(['in', 'employee_id', $doers_ids])->andWhere(['gender'=>'Female'])->distinct()->count();
         $result['males'] = $Males = Employee::find()->where(['in', 'employee_id', $doers_ids])->andWhere(['gender'=>'Male'])->distinct()->count();
         return $result;

@@ -121,16 +121,18 @@ class Task extends \yii\db\ActiveRecord
     }
     public function getIs_in_task(){
         $employee_id=Employee::findOne(['user_id'=>Yii::$app->user->getId()])->employee_id;
-        if(Yii::$app->user->can('updateProject',
-            ['project' => Project::findOne(['project_id'=>$this->project_id])->project_id])){
-            return 'Manager';
-        }
+
         if($verified = TaskEmployee::findOne(['task_id'=>$this->task_id, 'employee_id'=>$employee_id, 'verified'=>true])){
             return 'inBusiness';
         }
         if(TaskEmployee::findOne(['task_id'=>$this->task_id, 'employee_id'=>$employee_id, 'verified'=>'false'])){
             return 'toVerify';
         }
+        if(Yii::$app->user->can('updateProject', ['project' => Project::findOne(['project_id'=>$this->project_id])])
+            && $this->project->author_id == $employee_id){
+            return 'Manager';
+        }
+
         return false;
     }
 }

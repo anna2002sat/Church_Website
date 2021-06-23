@@ -197,11 +197,18 @@ class TaskController extends \yii\web\Controller
         if (!TaskEmployee::findOne(['task_id' => $task_id, 'employee_id' => $employee->employee_id])) {
             $new_doer = new TaskEmployee();
             $new_doer->task_id = $task_id;
-
             $new_doer->employee_id = $employee->employee_id;
+            if(Yii::$app->user->can('updateProject', ['project'=>$task->project])){
+                $new_doer->verified=true;
+            }
             if($new_doer->save()){
-                Yii::$app->session->setFlash('success', 'You have successfully applied for the task!
-             Please wait for the manager to let you in!');
+                if(Yii::$app->user->can('updateProject', ['project'=>$task->project])){
+                    Yii::$app->session->setFlash('success', 'You have been successfully added for the task!');
+                }
+                else {
+                    Yii::$app->session->setFlash('success', 'You have successfully applied for the task!
+                        Please wait for the manager to let you in!');
+                }
                 return $this->redirect(['index',
                     'project_id'=>Task::findOne(['task_id'=>$task_id])->project_id,
                     'isMyProjects'=>$isMyProjects

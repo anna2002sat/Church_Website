@@ -1,7 +1,5 @@
-
 <?php
 
-use kartik\rating\StarRating;
 use rmrevin\yii\fontawesome\FAS;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -28,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?=Html::img($model->getImage(), ['class'=>'w-100']);?>
 
                     <br><br>
-                    <?  if (Yii::$app->user->can('employeeUpdate', ['employee'=>$model])):?>
+                    <?  if (Yii::$app->user->can('employeeUpdate', ['employee'=>$model]) && !Yii::$app->user->can('Admin')):?>
                         <?= Html::a('Update Image', ['update-image', 'id' => $model->employee_id], ['class' => 'btn btn-outline-primary w-100']) ?>
                     <?endif;?>
                 </div>
@@ -46,12 +44,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]) ?>
                 <?  if (Yii::$app->user->can('employeeUpdate', ['employee'=>$model])):?>
                 <div class="row ">
+                    <? if(Yii::$app->user->can('Admin')):?>
+                        <? if($model->user_id==Yii::$app->user->getId()):?>
+                            <p class="col  text-left"><?=Html::a('Edit info', ['update', 'id' => $model->employee_id], ['class' => 'btn btn-outline-info  w-100']);?></p>
+                        <? endif;?>
+                        <? else:?>
                     <p class="col  text-left"><?=Html::a('Edit info', ['update', 'id' => $model->employee_id], ['class' => 'btn btn-outline-info  w-100']);?></p>
-                    <?if(!($model->user_id==Yii::$app->user->getId() && Yii::$app->user->can('Admin'))):?>
-                    <p class="col  text-right"><?=Html::a('Delete my employee account', ['delete', 'id' => $model->employee_id],
-                            ['class' => 'btn btn-outline-danger w-100 ',
-                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                'data-method'=>'post']);?></p>
+                        <p class="col  text-right"><?=Html::a('Delete my employee account', ['delete'],
+                                ['class' => 'btn btn-outline-danger w-100 ',
+                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                    'data-method'=>'post']);?></p>
                     <? endif;?>
 
                 <?endif;?>

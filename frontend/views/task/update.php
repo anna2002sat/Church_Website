@@ -37,23 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php $form = ActiveForm::begin(); ?>
         <? if (Yii::$app->user->can('updateProject', ['project'=>$model->project])): ?>
-            <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-
-            <?= $form->field($model, 'start')->widget(\yii\jui\DatePicker::classname(), [
-                'dateFormat' => 'yyyy-MM-dd',
-            ]) ?>
-
-            <?= $form->field($model, 'deadline')->widget(\yii\jui\DatePicker::classname(), [
-                'dateFormat' => 'yyyy-MM-dd',
-            ]) ?>
             <?= $form->field($model, 'status_id')->dropDownList(ArrayHelper::map(Status::find()->asArray()->all(), 'status_id', 'name')) ?>
-
-            <? if (Yii::$app->user->can('Admin', ['project'=>$model->project])):?>
-                <?= $form->field($model, 'project_id')->dropDownList(ArrayHelper::map(Project::find()->asArray()->all(), 'project_id', 'title'));?>
-            <? else: ?>
-                <?= $form->field($model, 'project_id')->dropDownList(ArrayHelper::map(Project::findAll(['author_id'=>(Employee::findOne(['user_id'=>Yii::$app->user->getId()])->employee_id)]), 'project_id', 'title'));?>
-            <?endif;?>
-
         <?elseif (Yii::$app->user->can('updateTaskStatus', ['task'=>$model])): ?>
             <?= $form->field($model, 'status_id')->dropDownList(ArrayHelper::map(Status::find()->where(['!=', 'name', 'Completed'])->asArray()->all(), 'status_id', 'name')) ?>
         <? endif;?>

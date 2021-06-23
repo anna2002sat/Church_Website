@@ -59,12 +59,6 @@ AppAsset::register($this);
         'url' => ['/donation/create']
     ];
     if (!Yii::$app->user->isGuest) {
-        if (Yii::$app->user->can('Manager')) {
-            $menuItems[] = [
-                'label' => FAS::icon('bell')->size(FAS::SIZE_2X),
-                'url' => ['/employee/messages']
-            ];
-        }
         if (Yii::$app->user->can('Employee')) {
             $dropDownItems[] = ['label' => 'My Projects', 'url' => ['/project/index', 'isMyProjects'=>true]];
             $dropDownItems[] = "<div class='dropdown-divider'></div>";
@@ -74,7 +68,7 @@ AppAsset::register($this);
 
         $dropDownItems[] = ['label'=>'My Employee Profile', 'url'=>'/employee/my-profile'];
         $dropDownItems[] = "<div class='dropdown-divider'></div>";
-        $dropDownItems[] = ['label'=>'My Donations', 'url'=>['/donation', 'my'=>true]];
+        $dropDownItems[] = ['label'=>'My Donations', 'url'=>['/donation']];
         $dropDownItems[] = "<div class='dropdown-divider'></div>";
         $dropDownItems[] = [
             'label'=>'Log Out (' . Yii::$app->user->identity->username . ')',

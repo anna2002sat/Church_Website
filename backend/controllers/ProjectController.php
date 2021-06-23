@@ -179,8 +179,9 @@ class ProjectController extends Controller
         ]);
     }
     private function allManagers(){
-        $managersIds = AuthAssignment::find()->select('user_id')->where(['item_name' => 'Manager'])->orWhere(['item_name' => 'Admin'])->asArray()->all();
-        $managers = Employee::find()->where(['in', 'user_id', $managersIds])->where(['verified'=>true])->asArray()->all();
+        $managersIds = AuthAssignment::find()->select('user_id')->where(['item_name' => 'Manager'])
+            ->orWhere(['item_name' => 'Admin'])->asArray()->all();
+        $managers = Employee::find()->where(['in', 'user_id', $managersIds])->asArray()->all();
         for ($i = 0; $i < count($managers); $i++) {
             $managers[$i]['fullname'] = $managers[$i]['first_name'] . ' ' . $managers[$i]['last_name'];
         }

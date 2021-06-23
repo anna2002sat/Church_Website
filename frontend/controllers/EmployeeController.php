@@ -4,23 +4,15 @@ namespace frontend\controllers;
 
 
 use frontend\models\AuthAssignment;
-use frontend\models\Doer;
 use frontend\models\EmployeeSearch;
 use frontend\models\EmployeeUploadForm;
 use frontend\models\Project;
-use frontend\models\ProjectSearch;
-use frontend\models\ProjectUploadForm;
-use frontend\models\Stars;
 use frontend\models\Task;
 use frontend\models\TaskEmployee;
-use frontend\models\TaskEmployeeSearch;
-use frontend\models\TaskSearch;
 use frontend\models\User;
 use Yii;
 use frontend\models\Employee;
-use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
-use yii\helpers\Html;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -47,11 +39,11 @@ class EmployeeController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index', 'view', 'create', 'update', 'delete', 'my-profile', 'update-image'],
+                'only' => ['index', 'view', 'create', 'update', 'my-profile', 'update-image', 'delete'],
                 'rules' => [
                     [
                         'allow' => false,
-                        'actions' => ['index','view', 'create', 'update', 'delete', 'my-profile', 'update-image'],
+                        'actions' => ['index','view', 'create', 'update', 'my-profile', 'update-image', 'delete'],
                         'roles' => ['?'],
                     ],
                     [
@@ -61,7 +53,7 @@ class EmployeeController extends Controller
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['index', 'view', 'create', 'delete', 'update', 'my-profile', 'update-image'],
+                        'actions' => ['index', 'view', 'create', 'update', 'my-profile', 'update-image', 'delete'],
                         'roles' => ['Employee'],
                     ],
                 ],
@@ -124,18 +116,13 @@ class EmployeeController extends Controller
      */
     public function actionCreate()
     {
-        if ((Yii::$app->user->can('Employee')) && !(Yii::$app->user->can('Admin'))){
+        if ((Yii::$app->user->can('Employee'))){
             throw new ForbiddenHttpException("Access Denied");
         }
         $model = new Employee();
 
         if ($model->load(Yii::$app->request->post())){
-            if (!Yii::$app->user->can('Admin')){
-                $model->email = User::findOne([Yii::$app->user->getId()])->email;
-            }
-            else{
-                $model->verified=true;
-            }
+            $model->email = User::findOne([Yii::$app->user->getId()])->email;
             if (!$model->about)
                 $model->about = 'Nothing much ;)';
             $upload = new EmployeeUploadForm();
@@ -186,47 +173,7 @@ class EmployeeController extends Controller
         ]);
     }
 
-    /**
-     * Deletes an existing Employee model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id, $deny=false)
-    {
-        $model = $this->findModel($id);
-        if (!Yii::$app->user->can('employeeUpdate', ['employee'=>$model]) ||
-            ($model->user_id==Yii::$app->user->getId() && Yii::$app->user->can('Admin'))){
-            throw new ForbiddenHttpException("You are not allowed to delete admin profile!");
-        }
-        $current_user = Employee::findOne(['user_id'=>Yii::$app->user->getId()]);
 
-        TaskEmployee::deleteAll(['employee_id'=>$id]);
-        $user_id = Employee::findOne(['employee_id'=>$id])->user_id;
-        AuthAssignment::deleteAll(['user_id'=>$user_id]);
-        $this->findModel($id)->delete();
-
-        if($deny) {
-            return $this->redirect(['messages']);
-        }
-        if($current_user->employee_id==$id)
-            return $this->redirect(['my-profile']);
-        return $this->redirect(['index']);
-    }
-    public function actionAccept($user_id){
-        if($user_id){
-            $auth = Yii::$app->authManager;
-            $employeeRole= $auth->getRole('Employee');
-            $auth->assign($employeeRole,$user_id);
-            $employee= Employee::findOne(['user_id'=>$user_id]);
-            $employee->verified=true;
-            $employee->save();
-        }
-        else
-            Yii::$app->session->setFlash('danger', 'This employee doesn`t have user account yet');
-        return $this->redirect(['messages']);
-    }
 
 
     public function actionMyProfile()
@@ -236,7 +183,7 @@ class EmployeeController extends Controller
             return $this->redirect('create');
         }
         if($model->verified){
-            $my_tasks_ids = TaskEmployee::find()->select('task_id')->where(['employee_id' => $model->employee_id])->asArray()->all();
+            $my_tasks_ids = TaskEmployee::find()->select('task_id')->where(['employee_id' => $model->employee_id,  'verified'=>true])->asArray()->all();
             $my_tasks = Task::find()->where(['task_id'=>$my_tasks_ids])->select('task_id')->asArray()->all();
 
             return $this->render('view',
@@ -254,41 +201,7 @@ class EmployeeController extends Controller
          Thanks for understanding!');
         return $this->redirect(['site/contact']);
     }
-    public function actionMessages(){
-        if(Yii::$app->user->can('Admin')){
-            $new_employees= Employee::find()->where(['verified'=>'0'])->all();
-        }
-        if(Yii::$app->user->can('Manager')){
-            $employee = Employee::findOne(['user_id'=>Yii::$app->user->getId()]);
-            $my_project_ids= Project::find()->where(['author_id'=>$employee->employee_id])->select('project_id');
-            $my_tasks = Task::find()->where(['project_id' => $my_project_ids])->select('task_id')->asArray()->all();
-            $new_doers = TaskEmployee::find()->where(['in', 'task_id', $my_tasks])
-                ->andWhere(['verified'=>false])->asArray()->all();
 
-            for($i=0; $i<count($new_doers); $i++){
-                $employee = Employee::findOne(['employee_id' => $new_doers[$i]['employee_id']]);
-                $new_doers[$i]['employee_img']= $employee->getImage();
-                $new_doers[$i]['employee_id']= $employee->employee_id;
-                $task = Task::findOne(['task_id'=>$new_doers[$i]['task_id']]);
-                $project =  Project::findOne(['project_id'=>[$task->project_id]]);
-                $new_doers[$i]['project_img']= $project->getImage();
-                $new_doers[$i]['project_id']= $project->project_id;
-                $new_doers[$i]['project_name']= $project->title;
-                $new_doers[$i]['task_name'] = $task->title;
-                $new_doers[$i]['doer'] = Employee::findOne(['employee_id'=>$new_doers[$i]['employee_id']])->getFullname();
-            }
-        }
-        else{
-            throw new ForbiddenHttpException("Access Denied");
-        }
-
-        return $this->render('messages',
-        [
-            'new_employees'=>$new_employees,
-                'new_doers'=>$new_doers,
-        ]);
-
-    }
 
     public function actionUpdateImage($id){
         $employee = $this->findModel($id);
@@ -303,6 +216,20 @@ class EmployeeController extends Controller
         }
         return $this->render('upload', ['model'=>$model, 'employee'=>$employee]);
     }
+
+    public function actionDelete()
+    {
+        if(Yii::$app->user->can('Admin')){
+            throw new ForbiddenHttpException("You are not allowed to delete admin profile!");
+        }
+        $employee = Employee::findOne(['user_id'=>Yii::$app->user->getId()]);
+
+        TaskEmployee::deleteAll(['employee_id'=>$employee->employee_id]);
+        AuthAssignment::deleteAll(['user_id'=>$employee->user_id]);
+        $this->findModel($employee->employee_id)->delete();
+
+        return $this->redirect(['my-profile']);
+    }
     protected function findModel($id)
     {
         if (($model = Employee::findOne($id)) !== null) {
@@ -311,60 +238,5 @@ class EmployeeController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionManagers(){
-        if (!Yii::$app->user->can('Admin')){
-            throw new ForbiddenHttpException("Access Denied");
-        }
-        $manager = new Doer();
 
-        if (Yii::$app->request->isPjax) {
-            $manager->load(Yii::$app->request->post());
-            if ($manager->doer_id > 0) {
-                $auth = Yii::$app->authManager;
-                $managerRole= $auth->getRole('Manager');
-                $employeeRole= $auth->getRole('Employee');
-                $auth->revoke($employeeRole, $manager->doer_id);
-                $auth->assign($managerRole, $manager->doer_id);
-                $manager->doer_id = 0;
-            }
-        }
-        $searchModel = new EmployeeSearch();
-
-        $searchModel->full_role='Manager';
-        $managers = $searchModel->search(Yii::$app->request->queryParams);
-
-//        $managers = new ActiveDataProvider([
-//            'query' => Employee::find()->where(['in', 'user_id', $managerRoles]),
-//            'pagination' => [
-//                'pageSize' => 20,
-//            ],
-//        ]);
-        $managerRoles = AuthAssignment::find()->where(['item_name'=>'Manager'])->select('user_id')->asArray()->all();
-        $free_employees = Employee::find()->where(['not in', 'user_id', $managerRoles])->andWhere(['!=','user_id','1'])->all();
-
-        return $this->render('managers', [
-            'managers' => $managers,
-            'manager' => $manager,
-            'free_employees' => $free_employees,
-            'searchModel'=>$searchModel
-        ]);
-    }
-    public function actionDeleteManager($user_id)
-    {
-        $employee = Employee::findOne(['user_id'=>$user_id]);
-        $curr_employee = Employee::findOne(['user_id'=>Yii::$app->user->getId()]);
-        $authorships = Project::find()->where(['author_id'=>$employee->employee_id])->all();
-        foreach ($authorships as $authorship) {
-            $authorship->author_id = $curr_employee->employee_id;
-            $authorship->save();
-        };
-
-        $auth = Yii::$app->authManager;
-        $role= $auth->getRole('Manager');
-        $employeeRole= $auth->getRole('Employee');
-        $auth->assign($employeeRole, $user_id);
-        $auth->revoke($role, $user_id);
-
-        return $this->redirect(['managers']);
-    }
 }

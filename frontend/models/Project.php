@@ -97,7 +97,7 @@ class Project extends \yii\db\ActiveRecord
 
     public function getGenderChart(){/////// GROUP BY
         $tasks=Task::find()->where(['project_id'=>$this->project_id])->select('task_id')->asArray()->all();
-        $doers_ids = TaskEmployee::find()->where(['in', 'task_id', $tasks])->select('employee_id')->asArray()->all();
+        $doers_ids = TaskEmployee::find()->where(['in', 'task_id', $tasks])->andWhere(['verified'=>true])->select('employee_id')->asArray()->all();
         $employees = Employee::find()->where(['in', 'employee_id', $doers_ids])->distinct();
         $genders = $employees->select(['COUNT(*) as count', 'gender'])->groupBy('gender')->asArray()->all();
         foreach ($genders as $gender){

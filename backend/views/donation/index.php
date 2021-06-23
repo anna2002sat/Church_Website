@@ -38,9 +38,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'last_name',
             [
                 'attribute'=>'email',
-                'visible' => !$my
-
+                'visible' => !$my,
             ],
+
             'phone',
             'amount',
             [
@@ -50,10 +50,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter'=>ArrayHelper::map(array_merge([['project_id'=>'-1', 'title'=>'Unassigned']],
                         Donation::Purposes()), 'project_id', 'title'),
             ],
-            'comments:ntext',
+            [
+                'attribute' => 'comments',
+                'contentOptions' => [
+                    'style' => [
+                        'white-space' => 'normal',
+                    ],
+                ],
+            ],
 
             ['class' => 'yii\grid\ActionColumn',
                 'template'=>'{delete}'],
+
         ],
     ]); ?>
 

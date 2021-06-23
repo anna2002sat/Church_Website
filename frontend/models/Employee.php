@@ -95,7 +95,7 @@ class Employee extends \yii\db\ActiveRecord
             return 'Employee';
     }
     public function getGenderChart($my_tasks){
-        $doers_ids = TaskEmployee::find()->where(['in', 'task_id', $my_tasks])->select('employee_id')->asArray()->all();
+        $doers_ids = TaskEmployee::find()->where(['in', 'task_id', $my_tasks])->andWhere(['verified'=>true])->select('employee_id')->asArray()->all();
         $result['females'] = Employee::find()->where(['in', 'employee_id', $doers_ids])->andWhere(['gender'=>'Female'])->distinct()->count();
         $result['males'] = $Males = Employee::find()->where(['in', 'employee_id', $doers_ids])->andWhere(['gender'=>'Male'])->distinct()->count();
         return $result;
@@ -129,8 +129,8 @@ class Employee extends \yii\db\ActiveRecord
                 if($user = User::findOne(['email'=>$this->email])){
                     $this->user_id = $user->id;
                 }
-                if($user = User::findOne(['id'=>$this->user_id])) {
-                    if($user->email!=$this->email){
+                $user = User::findOne(['id'=>$this->user_id]);
+                if($user->email!=$this->email){
                         if(!Yii::$app->user->can('Admin')){
                             $model = new ResendVerificationEmailForm();
                             $model->email=$this->email;
@@ -148,10 +148,10 @@ class Employee extends \yii\db\ActiveRecord
                             Yii::$app->session->setFlash('success', 'Email has been updated!');
 
                     }
-                }
         }
         return parent::beforeSave($insert);
     }
+
     public function getImage(){
         if ($this->image && is_file(Yii::getAlias('@frontend').'/web/images/employee/'.$this->image)) {
             return '/images/employee/' . $this->image;

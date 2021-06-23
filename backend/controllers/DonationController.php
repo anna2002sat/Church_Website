@@ -2,11 +2,11 @@
 
 namespace backend\controllers;
 
-use frontend\models\Project;
-use frontend\models\User;
+use backend\models\Project;
+use backend\models\User;
 use Yii;
-use frontend\models\Donation;
-use frontend\models\DonationSearch;
+use backend\models\Donation;
+use backend\models\DonationSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -40,7 +40,7 @@ class DonationController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'allow' => false,
+                        'allow' => true,
                         'actions' => ['index', 'create'],
                         'roles' => ['Manager'],
                     ],

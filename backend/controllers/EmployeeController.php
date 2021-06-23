@@ -192,8 +192,10 @@ class EmployeeController extends Controller
     public function actionDelete($id, $deny=false)
     {
         $model = $this->findModel($id);
-        if (!Yii::$app->user->can('employeeUpdate', ['employee'=>$model]) ||
-            ($model->user_id==Yii::$app->user->getId() && Yii::$app->user->can('Admin'))){
+        if (!Yii::$app->user->can('employeeUpdate', ['employee'=>$model])){
+            throw new ForbiddenHttpException("You are not allowed to delete this profile!");
+        }
+        if($model->user_id==Yii::$app->user->getId() && Yii::$app->user->can('Admin')){
             throw new ForbiddenHttpException("You are not allowed to delete admin profile!");
         }
         $current_user = Employee::findOne(['user_id'=>Yii::$app->user->getId()]);
@@ -207,7 +209,7 @@ class EmployeeController extends Controller
             return $this->redirect(['messages']);
         }
         if($current_user->employee_id==$id)
-            return $this->redirect(['my-profile']);
+            return $this->redirect(['_-profile']);
         return $this->redirect(['index']);
     }
     public function actionAccept($user_id){
@@ -232,7 +234,7 @@ class EmployeeController extends Controller
             return $this->redirect('create');
         }
         if($model->verified){
-            $my_tasks_ids = TaskEmployee::find()->select('task_id')->where(['employee_id' => $model->employee_id])->asArray()->all();
+            $my_tasks_ids = TaskEmployee::find()->select('task_id')->where(['employee_id' => $model->employee_id, 'verified'=>true])->asArray()->all();
             $my_tasks = Task::find()->where(['task_id'=>$my_tasks_ids])->select('task_id')->asArray()->all();
 
             return $this->render('view',
@@ -329,12 +331,6 @@ class EmployeeController extends Controller
         $searchModel->full_role='Manager';
         $managers = $searchModel->search(Yii::$app->request->queryParams);
 
-//        $managers = new ActiveDataProvider([
-//            'query' => Employee::find()->where(['in', 'user_id', $managerRoles]),
-//            'pagination' => [
-//                'pageSize' => 20,
-//            ],
-//        ]);
         $managerRoles = AuthAssignment::find()->where(['item_name'=>'Manager'])->select('user_id')->asArray()->all();
         $free_employees = Employee::find()->where(['not in', 'user_id', $managerRoles])->andWhere(['!=','user_id','1'])->all();
 

@@ -13,7 +13,7 @@ if($isMyProjects){
 }
 else{
     if(!$isMyTasks)
-        $this->params['breadcrumbs'][] = ['label' => 'Projects', 'url' => ['index']];
+        $this->params['breadcrumbs'][] = ['label' => 'Projects', 'url' => ['project/index']];
 }
 if($isMyTasks){
     $this->params['breadcrumbs'][] = ['label' => 'My Tasks', 'url' => ['/task/index', 'isMyProjects'=>false, 'isMyTasks'=>true]];
@@ -33,25 +33,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
         <div class="text-center row pb-5">
 
-        <? if (Yii::$app->user->can('updateProject', ['project' => $model->project])):?>
-            <?= Html::a('Update', ['task/update', 'id' => $model->task_id, 'isMyProjects'=>$isMyProjects, 'isMyTasks'=>$isMyTasks], ['class' => 'btn btn-primary col m-2']) ?>
-        <? elseif (Yii::$app->user->can('updateTaskStatus', ['task' => $model])):?>
-            <?= Html::a('Update status', ['task/update', 'id' => $model->task_id, 'isMyProjects'=>$isMyProjects, 'isMyTasks'=>$isMyTasks], ['class' => 'btn btn-primary col m-2']) ?>
+        <? if (Yii::$app->user->can('updateTaskStatus', ['task' => $model])):?>
+            <?= Html::a('Update status', ['update', 'id' => $model->task_id, 'isMyProjects'=>$isMyProjects, 'isMyTasks'=>$isMyTasks], ['class' => 'btn btn-primary col m-2']) ?>
         <? else:?>
             <?=Html::a('Apply for the task', Url::to(['apply', 'task_id'=>$model->task_id,
                 'isMyProjects'=>$isMyProjects]), ['class'=>'btn btn-outline-info col m-2'])?>
         <? endif;?>
 
 
-        <? if (\Yii::$app->user->can('updateProject', ['project' => $model->project])):?>
-        <?= Html::a('Delete', ['task/delete', 'id' => $model->task_id, 'isMyProjects'=>$isMyProjects, 'isMyTasks'=>$isMyTasks], [
-            'class' => 'btn btn-danger col m-2',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-        <?endif;?>
         <?= Html::a('See Doers', ['doers', 'task_id' => $model->task_id, 'isMyProjects'=>$isMyProjects, 'isMyTasks'=>$isMyTasks], ['class' => 'btn btn-info col m-2']) ?>
     </div>
     </div>

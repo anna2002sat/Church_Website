@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use frontend\models\Employee;
 use frontend\models\Project;
 use frontend\models\User;
 use Yii;
@@ -33,11 +34,11 @@ class DonationController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index', 'create', 'delete'],
+                'only' => ['index', 'create'],
                 'rules' => [
                     [
                         'allow' => false,
-                        'actions' => ['index', 'delete'],
+                        'actions' => ['index'],
                         'roles' => ['?'],
                     ],
                     [
@@ -50,11 +51,6 @@ class DonationController extends Controller
                         'actions' => ['index','create'],
                         'roles' => ['@'],
                     ],
-                    [
-                        'allow' => true,
-                        'actions' => ['create', 'index', 'delete',],
-                        'roles' => ['Admin'],
-                    ]
                 ],
                 'denyCallback' => function ($rule, $action) {
                     throw new ForbiddenHttpException("Access Denied");
@@ -68,32 +64,22 @@ class DonationController extends Controller
      * Lists all Donation models.
      * @return mixed
      */
-    public function actionIndex($my=false)
+    public function actionIndex()
     {
         $searchModel = new DonationSearch();
         if(Yii::$app->user->isGuest)
         {
             throw new ForbiddenHttpException("Access Denied");
         }
-        if($my)
-        {
-            $user=User::findOne(['id'=>Yii::$app->user->getId()]);
-            $searchModel->email=$user->email;
-        }
-        else{
-            if(!Yii::$app->user->can('Admin'))
-            {
-                throw new ForbiddenHttpException("Access Denied");
-            }
-        }
+        $user=User::findOne(['id'=>Yii::$app->user->getId()]);
+
+
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        if($my){
-            if(!$dataProvider->getCount()){
-                Yii::$app->session->setFlash('info', 'You haven`t made any donations yet! Press Donate Button to make one!');
-            }
-            else
-                Yii::$app->session->setFlash('success', 'Thank you for supporting us!');
+        if(!$dataProvider->getCount()){
+            Yii::$app->session->setFlash('info', 'You haven`t made any donations yet! Press Donate Button to make one!');
         }
+        else
+            Yii::$app->session->setFlash('success', 'Thank you for supporting us!');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -110,7 +96,11 @@ class DonationController extends Controller
     public function actionCreate()
     {
         $model = new Donation();
-
+        if(Yii::$app->user->can('Employee')){
+            $employee= Employee::findOne(['user_id'=>Yii::$app->user->getId()]);
+            $model->last_name=$employee->last_name;
+            $model->first_name=$employee->first_name;
+        }
         if ($model->load(Yii::$app->request->post())){
             if(!Yii::$app->user->isGuest){
                 $user=User::findOne(['id'=>Yii::$app->user->getId()]);
@@ -131,20 +121,6 @@ class DonationController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
-    }
-
-    /**
-     * Deletes an existing Donation model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**

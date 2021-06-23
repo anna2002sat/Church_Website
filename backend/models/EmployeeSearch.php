@@ -16,7 +16,7 @@ class EmployeeSearch extends Employee
      */
     public $role='';
     public $full_name='';
-    public $full_role;
+    public $full_role="";
     public $search="";
     public function rules()
     {
@@ -95,7 +95,7 @@ class EmployeeSearch extends Employee
                 ->andFilterWhere(['like', 'auth_assignment.item_name', $this->role])
                 ->andFilterWhere(['verified' => $this->verified]);
 
-            if (isset($this->full_role)){
+            if ($this->full_role!=""){
                 $query->andFilterWhere(['auth_assignment.item_name'=>$this->full_role]);
             }
         }

@@ -36,26 +36,6 @@ use yii\widgets\Pjax;
 
 ?>
 
-<?php Pjax::begin([
-    'id' => 'doer-container',
-
-]); ?>
-<?if (Yii::$app->user->can('updateProject', ['project' => $model->project])):?>
-
-    <?php $form = ActiveForm::begin([
-        'options' => ['data' => ['pjax' => true],],
-        'id' => 'doer'
-    ]);?>
-    <?= $form->field($doer, 'doer_id')->dropDownList(
-        ArrayHelper::map($free_employees, 'employee_id', 'fullname'),  [
-    'prompt'=>'Choose new doer:',
-    'id' => 'field-doer-id',
-    'onchange' => '$("#doer").submit()']);?>
-    <?php ActiveForm::end(); ?>
-<?php endif;?>
-
-
-
 <?= GridView::widget([
     'dataProvider' => $doers,
     'filterModel' => $searchModel,
@@ -81,13 +61,22 @@ use yii\widgets\Pjax;
                     ]);
                 },
                 'delete'=>function($url, $model) use ($isMyProjects, $isMyTasks){
-                    if (Yii::$app->user->can('employeeUpdate', ['employee' => $model->employee])
-                    || Yii::$app->user->can('updateProject', ['project' =>Project::findOne(['project_id'=>$model->task->project_id])->project_id])){
-                        return Html::a(FAS::icon('trash'), ['delete_doer', 'doer'=>$model->employee_id,'task'=>$model->task_id, 'isMyProjects'=>$isMyProjects, 'isMyTasks'=>$isMyTasks ],[
-                            'title' => Yii::t('app', 'Delete'),
-                            'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                            'data-method'=>'post',
-                        ]);
+                    if (Yii::$app->user->can('employeeUpdate', ['employee' => $model->employee])){
+                        if(Yii::$app->user->can('Admin')){
+                            if ($model->employee->user_id == Yii::$app->user->getId()){
+                                return Html::a(FAS::icon('trash'), ['delete_me', 'task' => $model->task_id, 'isMyProjects' => $isMyProjects, 'isMyTasks' => $isMyTasks], [
+                                    'title' => Yii::t('app', 'Delete'),
+                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                    'data-method' => 'post',
+                                ]);
+                            }
+                        }
+                        else
+                            return Html::a(FAS::icon('trash'), ['delete_me', 'task' => $model->task_id, 'isMyProjects' => $isMyProjects, 'isMyTasks' => $isMyTasks], [
+                                'title' => Yii::t('app', 'Delete'),
+                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                'data-method' => 'post',
+                            ]);
                     }
                     return '';
                 },
@@ -95,7 +84,6 @@ use yii\widgets\Pjax;
         ],
     ],
 ]); ?>
-<?php Pjax::end(); ?>
 
 
 

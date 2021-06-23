@@ -28,25 +28,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-6 text-center">
                 <img src="<?= $model->getImage()?>" class="w-100" style="border-radius: 2px; ">
                 <br>
-                <?if (Yii::$app->user->can('updateProject', ['project'=>$model])):?>
-                <?= Html::a('Change image', ['update-image', 'id'=>$model->project_id, 'isMyProjects'=>$isMyProjects], ['class' => 'btn btn-warning mt-3 w-75 text-center ']) ?>
-                <? endif;?>
             </div>
             <div class="col-6  align-self-center">
                 <div class="mt-2 text-center justify-content-end" id="sponsored"></div>
                 <p class="lead mt-2"><?= $model->description?></p>
                 <div class="text-center row">
-                    <?if (Yii::$app->user->can('updateProject', ['project'=>$model])):?>
-                        <?= Html::a('Update Project', ['update', 'id' => $model->project_id, 'isMyProjects'=>$isMyProjects], ['class' => 'btn btn-primary col-3 m-1']) ?>
-                        <?= Html::a('Delete Project', ['delete', 'id' => $model->project_id, 'isMyProjects'=>$isMyProjects], [
-                            'class' => 'btn btn-danger col-3 m-1',
-                            'data' => [
-                                'confirm' => 'Are you sure you want to delete this item?',
-                                'method' => 'post',
-                            ],
-                        ]) ?>
-                        <?= Html::a('Add Task', ['task/create', 'project_id'=>$model->project_id, 'isMyProjects'=>$isMyProjects], ['class' => 'btn btn-success col-2 m-1']) ?>
-                    <?endif;?>
                     <?if (Yii::$app->user->can('Employee')):?>
                         <?= Html::a('See All Tasks', ['/task/index', 'project_id'=>$model->project_id, 'isMyProjects'=>$isMyProjects], ['class' => 'btn btn-info col-3 m-1']) ?>
                     <? endif;?>
@@ -70,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <? endif;?>
     </div>
 
-    <? if ($notEmpty):?>
+    <? if ($notEmpty && Yii::$app->user->can('Employee')):?>
         <h1 class="container text-center mt-5" style="font-family: 'Algerian'">Summary by project</h1>
     <div class="row">
         <!--Completion of project    -->
@@ -100,78 +86,78 @@ $this->params['breadcrumbs'][] = $this->title;
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-        if (<?= $notEmpty?>){
-        /////////////////////////////
-        var completion = google.visualization.arrayToDataTable([
-            ['Completion', 'Number of tasks'],
-            ['Completed', <?= $completionChart['Completed']?>],
-            ['Not Completed', <?= $completionChart['Not Completed']?>],
-        ]);
-        var optionsCompletion = {
-            title: 'Project Completion:',
-            pieHole: 0.4,
-            slices: {
-                0: {color: '#28a745'},
-                1: {color: 'red'}
-            }
-        };
-        var completionChart = new google.visualization.PieChart(document.getElementById('completionChart'));
-        completionChart.draw(completion, optionsCompletion);
+        <?if ($notEmpty && Yii::$app->user->can('Employee')) :?>
+            /////////////////////////////
+            var completion = google.visualization.arrayToDataTable([
+                ['Completion', 'Number of tasks'],
+                ['Completed', <?= $completionChart['Completed']?>],
+                ['Not Completed', <?= $completionChart['Not Completed']?>],
+            ]);
+            var optionsCompletion = {
+                title: 'Project Completion:',
+                pieHole: 0.4,
+                slices: {
+                    0: {color: '#28a745'},
+                    1: {color: 'red'}
+                }
+            };
+            var completionChart = new google.visualization.PieChart(document.getElementById('completionChart'));
+            completionChart.draw(completion, optionsCompletion);
 
-        /////////////////////////////
-        var overDue = google.visualization.arrayToDataTable([
-            ['Project Performance', 'Number of tasks'],
-            ['Not Overdue', <?= $overDueChart['Not overDue']?>],
-            ['Behind Deadline', <?= $overDueChart['overDue']?>],
-        ]);
-        var optionsOverDue = {
-            title: 'Behind Deadlines',
-            slices: {
-                0: {color: '#28a745'},
-                1: {color: 'red'}
-            }
-        };
-        var overDueChart = new google.visualization.PieChart(document.getElementById('overDueChart'));
-        overDueChart.draw(overDue, optionsOverDue);
+            /////////////////////////////
+            var overDue = google.visualization.arrayToDataTable([
+                ['Project Performance', 'Number of tasks'],
+                ['Not Overdue', <?= $overDueChart['Not overDue']?>],
+                ['Behind Deadline', <?= $overDueChart['overDue']?>],
+            ]);
+            var optionsOverDue = {
+                title: 'Behind Deadlines',
+                slices: {
+                    0: {color: '#28a745'},
+                    1: {color: 'red'}
+                }
+            };
+            var overDueChart = new google.visualization.PieChart(document.getElementById('overDueChart'));
+            overDueChart.draw(overDue, optionsOverDue);
 
-        /////////////////////////////
-        var statuses = google.visualization.arrayToDataTable([
-            ['Status', 'Tasks in it'],
-            ['ToDo', <?= $statusChart['ToDo']?>],
-            ['In Progress', <?= $statusChart['InProgress']?>],
-            ['To Verify', <?= $statusChart['ToVerify']?>],
-            ['Completed', <?= $statusChart['Completed']?>],
-        ]);
-        var optionsStatus = {
-            title: 'Status correlation',
-            is3D: true,
-            slices: {
-                0: {color: 'blue'},
-                1: {color: 'orange'},
-                2: {color: 'deeppink'},
-                3: {color: '#28a745'},
-            }
-        };
-        var statusChart = new google.visualization.PieChart(document.getElementById('statusChart'));
-        statusChart.draw(statuses, optionsStatus);
+            /////////////////////////////
+            var statuses = google.visualization.arrayToDataTable([
+                ['Status', 'Tasks in it'],
+                ['ToDo', <?= $statusChart['ToDo']?>],
+                ['In Progress', <?= $statusChart['InProgress']?>],
+                ['To Verify', <?= $statusChart['ToVerify']?>],
+                ['Completed', <?= $statusChart['Completed']?>],
+            ]);
+            var optionsStatus = {
+                title: 'Status correlation',
+                is3D: true,
+                slices: {
+                    0: {color: 'blue'},
+                    1: {color: 'orange'},
+                    2: {color: 'deeppink'},
+                    3: {color: '#28a745'},
+                }
+            };
+            var statusChart = new google.visualization.PieChart(document.getElementById('statusChart'));
+            statusChart.draw(statuses, optionsStatus);
 
-        /////////////////////////////
-        var gender = google.visualization.arrayToDataTable([
-            ['Gender', 'Number of people'],
-            ['Males', <?= $genderChart['males']?>],
-            ['Females', <?= $genderChart['females']?>],
-        ]);
-        var optionsGender = {
-            title: 'Gender correlation',
-            is3D: true,
-            slices: {
-                0: {color: 'blue'},
-                1: {color: 'deeppink'}
-            }
-        };
-        var genderChart = new google.visualization.PieChart(document.getElementById('genderChart'));
-        genderChart.draw(gender, optionsGender);
-    }
+            /////////////////////////////
+            var gender = google.visualization.arrayToDataTable([
+                ['Gender', 'Number of people'],
+                ['Males', <?= $genderChart['males']?>],
+                ['Females', <?= $genderChart['females']?>],
+            ]);
+            var optionsGender = {
+                title: 'Gender correlation',
+                is3D: true,
+                slices: {
+                    0: {color: 'blue'},
+                    1: {color: 'deeppink'}
+                }
+            };
+            var genderChart = new google.visualization.PieChart(document.getElementById('genderChart'));
+            genderChart.draw(gender, optionsGender);
+    <? endif;?>
 
 /////////////////////////////
         if(<?= $model->collected_sum > 0 || $model->needed_sum > 0 ?>) {

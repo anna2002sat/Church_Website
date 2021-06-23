@@ -70,9 +70,10 @@ class DonationSearch extends Donation
             $query->andFilterWhere([
                 'project_id' => $this->project_id]);
 
+        $user_email = User::findOne(['id'=>\Yii::$app->user->getId()])->email;
         $query->andFilterWhere(['like', 'first_name', $this->first_name])
             ->andFilterWhere(['like', 'last_name', $this->last_name])
-            ->andFilterWhere(['like', 'email', $this->email])
+            ->andFilterWhere(['like', 'email', $user_email])
             ->andFilterWhere(['like', 'phone', $this->phone])
             ->andFilterWhere(['like', 'comments', $this->comments]);
 

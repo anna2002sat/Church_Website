@@ -54,18 +54,21 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Apply',
                 'format' => 'raw',
-                 'visible' => (!(Yii::$app->user->can('updateProject', ['project' => $dataProvider->models->project]))),
+//                 'visible' => (!(Yii::$app->user->can('updateProject', ['project' => $dataProvider->models->project]))),
                 'value' => function($model) use($isMyProjects){
                     $message = $model->is_in_task;
-                        if($message==false)
+                    if($message==false)
                         return '<div class="text-center">'.Html::a('Apply for the task', Url::to(['apply', 'task_id'=>$model->task_id,
-                            'isMyProjects'=>$isMyProjects]), ['class'=>'btn btn-outline-info']).'</div>';
+                                'isMyProjects'=>$isMyProjects]), ['class'=>'btn btn-outline-info']).'</div>';
                     else
                         if($message=='toVerify'){
                             return "<p class='text-center text-success'>You have applied for the task!</p>";
                         }
+                        else if($message=='Manager'){
+                            return "<p class='text-center text-success'>You are just a manager!</p>";
+                        }
                         else
-                              return "<p class='text-center text-success'>You are in business</p>";
+                            return "<p class='text-center text-success'>You are in business</p>";
                 },
 
 
